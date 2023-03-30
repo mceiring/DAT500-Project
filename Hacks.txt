@@ -1,0 +1,32 @@
+Hadoop_prepros.sh 
+    kjør tingan. 
+    kommenter ut eller inn d man ska gjør, 
+    lettere enn å skriv inn alltid
+#
+INLINE:
+py file.py inline -r inputfile
+
+ERROR LOG:
+ssh datanode
+cmd: log (cd til log fila)
+    inn i nyeste job, får opp containers, 
+        stderr i hver container gir standard python log
+
+MapRed uten MRjob:
+    større run command, oppgir all tingang
+
+MapRed med MRjob:
+    en py file med map og reduce,
+        fixa alt
+
+HDFS:
+hdfs fs -rm -r 
+hdfs fs -text filename
+hdfs fs -text filename/part* | less
+hadoop fs -text /chess_2016_dataset/output1/part* | less
+
+move files to hdfs:
+hadoop fs -put /local-file-path /hdfs-file-path
+
+ls hdfs:
+hadoop fs -ls /chess_2016_dataset

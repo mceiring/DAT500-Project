@@ -40,7 +40,7 @@ def find_black_blunders(arr, difference):
         i += 2
     return count
 
-def plot_eval_game(eval_games: pyspark.sql.dataframe.DataFrame) -> None:
+def plot_eval_game(eval_games: any) -> None:
     ## Get Necessary Data for Plotting...
     eval = eval_games.select("Eval").orderBy(col("WhiteBlunders").desc()).collect()[0][0]
     white_blunders = eval_games.select("WhiteBlunders").orderBy(col("WhiteBlunders").desc()).collect()[0][0]

@@ -138,7 +138,7 @@ class MRCountSum(MRJob): # kanskje endre navn?
             yield None, result
 
     def reducer(self, _, values):
-        final_headers = [f"\"{head}\"" for head in HEADERS]
+        #final_headers = [f"\"{head}\"" for head in HEADERS]
         yield None, bytes("\n".join(values), "utf-8")
 
     """ def combiner(self, key, values):

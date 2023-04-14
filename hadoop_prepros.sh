@@ -17,7 +17,7 @@ hadoop fs -rm -r /chess_2016_dataset/output
 # runs current files, with specified input and output
 python3 test/test_mapreduce.py \
      --hadoop-streaming-jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar \
-     --jobconf mapred.textoutputformat.separator=" " \
+     --jobconf mapred.output.textoutputformat.separator=" " \
      -r hadoop hdfs://namenode:9000/chess_2016_dataset/mini_chess.txt \
      --output-dir hdfs://namenode:9000/chess_2016_dataset/output --no-output
      

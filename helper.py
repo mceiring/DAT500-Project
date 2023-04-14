@@ -3,6 +3,7 @@ from pyspark.sql.types import ArrayType, FloatType, IntegerType
 from matplotlib import pyplot as plt
 import numpy as np
 import pyspark
+import seaborn as sns
 #
 def convert_types(df):
     df = df.withColumn("Moves", split(col("Moves"),","))
@@ -65,3 +66,8 @@ Black Player: {black_name} ({black_elo} ELO) ({black_blunders} blunders)""")
     
     fig.tight_layout()
     plt.savefig("chess_2016_dataset/images/blunder.png")
+
+def plot_elo_distribution(elo: list) -> None:
+    # set the background style of the plot
+    sns.set_style('whitegrid')
+    sns.distplot(elo, kde = True, color ='red', bins = 30)

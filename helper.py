@@ -1,4 +1,4 @@
-from pyspark.sql.functions import split, col, translate, udf
+from pyspark.sql.functions import split, col, translate, udf, size
 from pyspark.sql.types import ArrayType, FloatType, IntegerType
 from matplotlib import pyplot as plt
 import numpy as np
@@ -43,13 +43,13 @@ def find_black_blunders(arr, difference):
 
 def plot_eval_game(eval_games: any) -> None:
     ## Get Necessary Data for Plotting...
-    eval = eval_games.select("Eval").orderBy(col("WhiteBlunders").desc()).collect()[0][0]
-    white_blunders = eval_games.select("WhiteBlunders").orderBy(col("WhiteBlunders").desc()).collect()[0][0]
-    black_blunders = eval_games.select("BlackBlunders").orderBy(col("WhiteBlunders").desc()).collect()[0][0]
-    white_name = eval_games.select("White").orderBy(col("WhiteBlunders").desc()).collect()[0][0]
-    black_name = eval_games.select("Black").orderBy(col("WhiteBlunders").desc()).collect()[0][0]
-    white_elo = eval_games.select("WhiteElo").orderBy(col("WhiteBlunders").desc()).collect()[0][0]
-    black_elo = eval_games.select("BlackElo").orderBy(col("WhiteBlunders").desc()).collect()[0][0]
+    eval = eval_games.select("Eval").orderBy(col("WhiteBlunders").desc()).where(size("Moves") < 25).collect()[0][0]
+    white_blunders = eval_games.select("WhiteBlunders").orderBy(col("WhiteBlunders").desc()).where(size("Moves") < 25).collect()[0][0]
+    black_blunders = eval_games.select("BlackBlunders").orderBy(col("WhiteBlunders").desc()).where(size("Moves") < 25).collect()[0][0]
+    white_name = eval_games.select("White").orderBy(col("WhiteBlunders").desc()).where(size("Moves") < 25).collect()[0][0]
+    black_name = eval_games.select("Black").orderBy(col("WhiteBlunders").desc()).where(size("Moves") < 25).collect()[0][0]
+    white_elo = eval_games.select("WhiteElo").orderBy(col("WhiteBlunders").desc()).where(size("Moves") < 25).collect()[0][0]
+    black_elo = eval_games.select("BlackElo").orderBy(col("WhiteBlunders").desc()).where(size("Moves") < 25).collect()[0][0]
 
     eval = [e for e in eval if abs(e) < 1000]
     black_and_white = [f"W{idx+1}" if idx%2==0 or idx==0 else f"B{idx+1}" for idx in range(len(eval))]

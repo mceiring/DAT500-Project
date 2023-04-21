@@ -18,7 +18,7 @@ hadoop fs -rm -r /chess_2016_dataset/output
 python3 test/test_mapreduce.py \
      --hadoop-streaming-jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar \
      --jobconf mapred.output.textoutputformat.separator=" " \
-     -r hadoop hdfs://namenode:9000/chess_2016_dataset/chess_part_1.txt \
+     -r hadoop hdfs://namenode:9000/chess_2016_dataset/input_files/*.txt \
      --output-dir hdfs://namenode:9000/chess_2016_dataset/output --no-output
      
 
@@ -36,7 +36,7 @@ python3 test/test_mapreduce.py \
 # py chess_structure_mapper.py inline -r chess_2016_dataset/chess_part_1.txt
 # py chess_structure_mapper.py -r inline chess_2016_dataset/chess_part_1.txt
 
-# SPARK WEB UI ssh namenode -L 4040:localhost:4040
+# SPARK WEB UI ssh namenode -L 8088:localhost:8088
 
 # python3 chess_csv_mapper.py \
 #      --hadoop-streaming-jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar \

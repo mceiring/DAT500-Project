@@ -9,6 +9,6 @@ for i in $(seq 1 10); do
         --hadoop-streaming-jar /usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.4.jar \
         --jobconf mapred.output.textoutputformat.separator=" " \
         -r hadoop hdfs://namenode:9000/chess_2016_dataset/input_files/chess_part_$i.txt \
-        --output-dir hdfs://namenode:9000/chess_2016_dataset/output_$i --no-output
+        --output-dir hdfs://namenode:9000/chess_2016_dataset/output --no-output
 done
 

@@ -135,11 +135,12 @@ class MRCountSum(MRJob): # kanskje endre navn?
                     index = HEADERS.index(header)
                     result[index] = values[idx]
             result = ",".join(result)
-            yield None, result
+            #yield None, result
+            yield None, bytes(result, "utf-8")
 
-    def reducer(self, _, values):
-        #final_headers = [f"\"{head}\"" for head in HEADERS]
-        yield None, bytes("\n".join(values), "utf-8")
+    #def reducer(self, _, values):
+        ##final_headers = [f"\"{head}\"" for head in HEADERS]
+        ##yield None, bytes("\n".join(values), "utf-8")
 
     """ def combiner(self, key, values):
         yield key, list(values) # EVENT, storstinr"""

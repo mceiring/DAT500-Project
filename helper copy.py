@@ -1,4 +1,4 @@
-from pyspark.sql.functions import split, col, translate, udf, expr, arrays_zip, array_join, size
+from pyspark.sql.functions import split, col, translate, udf, size
 from pyspark.sql.types import ArrayType, FloatType, IntegerType
 from matplotlib import pyplot as plt
 import numpy as np
@@ -27,19 +27,39 @@ def find_white_blunders(arr, difference):
     return count
 
 @udf(returnType=IntegerType())
-def find_black_blunders(arr, difference):
+def find_black_blunders(evals, difference):
     count = 0
     i = 1
-    while i < len(arr)-1:
-        if abs(arr[i-1]) >= 10 and abs(arr[i-1]) <= 20:
+    while i < len(evals)-1:
+        if abs(evals[i-1]) >= 10 and abs(evals[i-1]) <= 20:
             difference = 8.0
-        if abs(arr[i-1]) > 20:
+        if abs(evals[i-1]) > 20:
             difference = 20.0
-        if (arr[i] - arr[i-1]) >= difference:
-            if abs(arr[i]) < 1000 and abs(arr[i-1]) < 1000:
+        if (evals[i] - evals[i-1]) >= difference:
+            if abs(evals[i]) < 1000 and abs(evals[i-1]) < 1000:
                 count += 1
         i += 2
     return count
+
+def find_black_blunders(color, evals, difference):
+    blunder_count = 0
+    prev_eval = 0
+    evals = evals[::2] if color=='white' else evals[1::2]   
+    for eval in evals: # every other eval, 
+        # set new difference margin
+        if 10 <= eval <= 20:
+            difference = 8.0
+        elif eval > 20:
+            difference = 20.0
+
+        if eval - prev_eval >= difference and eval < 1000 and prev_eval < 1000:
+            blunder_count += 1
+        
+        prev_eval = eval
+    
+    return blunder_count
+
+
 
 def plot_eval_game(eval_games: any) -> None:
     ## Get Necessary Data for Plotting...
@@ -99,30 +119,3 @@ def plot_elo_distribution(elo: list) -> None:
     # set the background style of the plot
     sns.set_style('whitegrid')
     sns.distplot(elo, kde = True, color ='red', bins = 30)
-
-def replace_UDF(df: any) -> any:
-
-    eval_difference = 3.0
-
-    eval_games = df.where(col("Eval")[0].isNotNull())
-
-    # Create an array column of tuples containing the previous and current elements of the "Eval" column
-    pairs = arrays_zip(expr("slice(Eval, 2, size(Eval)-1)"), expr("slice(Eval, 1, size(Eval)-2)"))
-
-    # Create a new array column with the absolute difference between each pair of elements
-    diffs = expr("transform(pairs, x -> abs(x[0] - x[1]))")
-
-    # Create a new array column with the adjusted threshold values for each element
-    thresholds = expr("transform(slice(Eval, 2, size(Eval)-1), x -> if(abs(x) >= 10 and abs(x) <= 20, 8.0, if(abs(x) > 20, 20.0, null)))")
-
-    # Combine the diffs and thresholds arrays into a single array column
-    combined = arrays_zip(diffs, thresholds)
-
-    # Create a new array column with the number of "white blunders" for each pair of elements
-    counts = expr("transform(filter(combined, x -> x[1] is not null), x -> if(x[0] >= x[1], 1, 0))")
-
-    # Sum the counts array to get the total number of "white blunders" for each row
-    total_count = expr("aggregate(counts, 0, (acc, x) -> acc + x)")
-
-    # Add the total_count as a new column to the eval_games DataFrame
-    eval_games = eval_games.withColumn("WhiteBlunders", total_count)

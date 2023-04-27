@@ -1,8 +1,7 @@
-from pyspark.sql.functions import split, col, translate, udf, expr, arrays_zip, array_join, size
+from pyspark.sql.functions import split, col, translate, udf, expr, arrays_zip, size
 from pyspark.sql.types import ArrayType, FloatType, IntegerType
 from matplotlib import pyplot as plt
 import numpy as np
-import pyspark
 import seaborn as sns
 #
 def convert_types(df):
@@ -13,14 +12,20 @@ def convert_types(df):
 
 @udf(returnType=IntegerType())
 def find_white_blunders(arr, difference):
+    # Blunder counter
     count = 0
+    # Start at white player second move.
     i = 2
+    # Loop through eval list
     while i < len(arr)-1:
+        # Change blunder treshold based of previous eval
         if abs(arr[i-1]) >= 10 and abs(arr[i-1]) <= 20:
             difference = 8.0
         if abs(arr[i-1]) > 20:
             difference = 20.0
-        if (arr[i-1] - arr[i]) >= difference: 
+        # Check if current eval is worse by "difference" compared to previous move.
+        if (arr[i-1] - arr[i]) >= difference:
+            # Removing Mating outliers.
             if abs(arr[i]) < 1000 and abs(arr[i-1]) < 1000:
                 count += 1
         i += 2
@@ -28,14 +33,20 @@ def find_white_blunders(arr, difference):
 
 @udf(returnType=IntegerType())
 def find_black_blunders(arr, difference):
+    # Blunder counter
     count = 0
+    # Start at Black player first move.
     i = 1
+    # Loop through eval list
     while i < len(arr)-1:
+        # Change blunder treshold based of previous eval
         if abs(arr[i-1]) >= 10 and abs(arr[i-1]) <= 20:
             difference = 8.0
         if abs(arr[i-1]) > 20:
             difference = 20.0
+        # Check if current eval is worse by "difference" compared to previous move.
         if (arr[i] - arr[i-1]) >= difference:
+            # Removing Mating outliers.
             if abs(arr[i]) < 1000 and abs(arr[i-1]) < 1000:
                 count += 1
         i += 2
@@ -101,7 +112,6 @@ def plot_elo_distribution(elo: list) -> None:
     sns.distplot(elo, kde = True, color ='red', bins = 30)
 
 def replace_UDF(df: any) -> any:
-
     eval_difference = 3.0
 
     eval_games = df.where(col("Eval")[0].isNotNull())
@@ -126,3 +136,4 @@ def replace_UDF(df: any) -> any:
 
     # Add the total_count as a new column to the eval_games DataFrame
     eval_games = eval_games.withColumn("WhiteBlunders", total_count)
+    return eval_games

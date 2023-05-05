@@ -11,7 +11,7 @@ def convert_types(df):
     return df
 
 @udf(returnType=IntegerType())
-def find_white_blunders(arr, difference):
+def find_white_blunders(arr, difference): #array of evaluations, and differnece threshold
     # Blunder counter
     count = 0
     # Start at white player second move.
@@ -110,6 +110,7 @@ def plot_elo_distribution(elo: list) -> None:
     # set the background style of the plot
     sns.set_style('whitegrid')
     sns.distplot(elo, kde = True, color ='red', bins = 30)
+    plt.savefig("chess_2016_dataset/images/elo-distribution.png")
 
 def replace_UDF(df: any) -> any:
     eval_difference = 3.0
